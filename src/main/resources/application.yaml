@@ -1,3 +1,28 @@
 spring:
   application:
     name: transaction-processing-service
+  datasource:
+    url: ${DB_URL:jdbc:h2:file:./data/transactions;DB_CLOSE_ON_EXIT=FALSE}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+  sql:
+    init:
+      mode: always
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: never
+processing:
+  enabled: true
+  poll-delay-ms: 500
+  max-attempts: 3
+  retry-delay-ms: 1000
+  batch-size: 100

@@ -1,0 +1,19 @@
+[
+  {
+    "accountId": "ACC-201",
+    "currency": "USD",
+    "openingBalance": 0
+  },
+  {
+    "accountId": "ACC-202",
+    "currency": "USD",
+    "openingBalance": 0,
+    "startingSequence": 4
+  },
+  {
+    "accountId": "ACC-203",
+    "currency": "USD",
+    "openingBalance": 0,
+    "startingSequence": 5
+  }
+]

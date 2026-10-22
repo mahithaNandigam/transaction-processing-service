@@ -1,0 +1,4 @@
+processing:
+  simulated-failures:
+    TXN-2005: 1
+    TXN-FAIL: 10

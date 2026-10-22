@@ -1,4 +1,4 @@
-package com.mahitha.transactionprocessing;
+package com.mahitha.tps;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
