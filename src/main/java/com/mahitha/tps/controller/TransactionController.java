@@ -53,6 +53,10 @@ public class TransactionController {
             @RequestParam(defaultValue = "0") @jakarta.validation.constraints.Min(0) long offset) {
         return service.attempts(id, limit, offset);
     }
+    @PostMapping("/{id}/cancel")
+    public TransactionRecord cancel(@PathVariable String id, @RequestBody CancelTransactionRequest request) {
+        return service.cancel(id, request);
+    }
     @PostMapping("/{id}/retry")
     public ResponseEntity<TransactionRecord> retry(@PathVariable String id) { return ResponseEntity.accepted().body(service.retry(id)); }
 }

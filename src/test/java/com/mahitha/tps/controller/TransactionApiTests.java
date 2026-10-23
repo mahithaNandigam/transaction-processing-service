@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 class TransactionApiTests {
     @Autowired MockMvc mvc;
     @Autowired JdbcTemplate jdbc;
+    @Autowired com.mahitha.tps.service.TransactionService service;
     private static final String VALID = """
             {"transactionId":"T1","requestId":"R1","accountId":"A1","transactionType":"CREDIT","amount":100,"currency":"USD","sequenceNumber":1}
             """;
@@ -68,6 +69,24 @@ class TransactionApiTests {
         mvc.perform(get("/api/v1/requests/R1")).andExpect(status().isOk()).andExpect(jsonPath("$.outcome").value("ACCEPTED"));
         mvc.perform(get("/api/v1/processing/summary")).andExpect(status().isOk()).andExpect(jsonPath("$.requestCounts[0].TOTAL").value(1));
         mvc.perform(get("/api/v1/transactions/T1/attempts")).andExpect(status().isOk());
+    }
+    @Test void rejectsFractionalSequenceAndNumericTransactionType() throws Exception {
+        mvc.perform(post("/api/v1/transactions").contentType(MediaType.APPLICATION_JSON).content(VALID.replace("\"sequenceNumber\":1", "\"sequenceNumber\":1.5")))
+                .andExpect(status().isBadRequest());
+        mvc.perform(post("/api/v1/transactions").contentType(MediaType.APPLICATION_JSON).content(VALID.replace("\"CREDIT\"", "0")))
+                .andExpect(status().isBadRequest());
+    }
+    @Test void cancellationRequiresReasonAndPreservesAuditHistory() throws Exception {
+        mvc.perform(post("/api/v1/transactions").contentType(MediaType.APPLICATION_JSON).content(VALID.replace("CREDIT", "DEBIT")))
+                .andExpect(status().isAccepted());
+        service.processBatch();
+        mvc.perform(post("/api/v1/transactions/T1/cancel").contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(post("/api/v1/transactions/T1/cancel").contentType(MediaType.APPLICATION_JSON).content("{\"reasonCode\":\"CUSTOMER_WITHDREW\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("CANCELLED"));
+        mvc.perform(get("/api/v1/transactions/T1/attempts")).andExpect(status().isOk())
+                .andExpect(jsonPath("$[1].OUTCOME").value("CANCELLED"));
+        mvc.perform(post("/api/v1/transactions/T1/retry")).andExpect(status().isConflict());
     }
     @Test void exposesHealthAndPrometheus() throws Exception {
         mvc.perform(get("/actuator/health")).andExpect(status().isOk()).andExpect(jsonPath("$.status").value("UP"));

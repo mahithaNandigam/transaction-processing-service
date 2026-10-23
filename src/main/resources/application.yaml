@@ -1,4 +1,10 @@
 spring:
+  jackson:
+    deserialization:
+      accept-float-as-int: false
+    datatype:
+      enum:
+        fail-on-numbers-for-enums: true
   application:
     name: transaction-processing-service
   datasource:

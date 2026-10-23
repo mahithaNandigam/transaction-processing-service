@@ -10,10 +10,17 @@ import org.springframework.stereotype.Component;
 public class BackgroundProcessor {
     private static final Logger log = LoggerFactory.getLogger(BackgroundProcessor.class);
     private final TransactionService service;
-    public BackgroundProcessor(TransactionService service) { this.service = service; }
+
+    public BackgroundProcessor(TransactionService service) {
+        this.service = service;
+    }
+
     @Scheduled(fixedDelayString = "${processing.poll-delay-ms:500}")
     public void poll() {
-        try { service.processBatch(); }
-        catch (RuntimeException e) { log.error("event=worker_poll_failed exceptionType={}", e.getClass().getSimpleName()); }
+        try {
+            service.processBatch();
+        } catch (RuntimeException e) {
+            log.error("event=worker_poll_failed exceptionType={}", e.getClass().getSimpleName());
+        }
     }
 }

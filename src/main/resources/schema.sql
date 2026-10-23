@@ -52,3 +52,5 @@ CREATE TABLE IF NOT EXISTS processing_attempts (
     recorded_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_attempt_transaction ON processing_attempts(transaction_id, id);
+
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS version BIGINT NOT NULL DEFAULT 0;

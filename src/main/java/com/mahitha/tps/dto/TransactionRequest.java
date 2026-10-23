@@ -2,6 +2,7 @@ package com.mahitha.tps.dto;
 
 import com.mahitha.tps.model.TransactionType;
 import jakarta.validation.constraints.*;
+
 import java.math.BigDecimal;
 
 public record TransactionRequest(
@@ -11,4 +12,5 @@ public record TransactionRequest(
         @NotNull TransactionType transactionType,
         @NotNull @DecimalMin("0.01") @Digits(integer = 17, fraction = 2) BigDecimal amount,
         @NotBlank @Pattern(regexp = "[A-Z]{3}") String currency,
-        @NotNull @Min(1) @Max(9223372036854775806L) Long sequenceNumber) {}
+        @NotNull @Min(1) @Max(9223372036854775806L) Long sequenceNumber) {
+}
